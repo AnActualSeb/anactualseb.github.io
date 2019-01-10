@@ -38,6 +38,7 @@ a {
 .assignment a {
     color: #000;
     text-decoration: none;
+    padding: 20px 20px 20px 30px;
 }
 
 .assignment a:hover {
