@@ -18,14 +18,14 @@ a {
   background: #fff;
   color: #000;
   height: 500px;
-  padding: 30px 30px 30px;
+  padding: 90px 90px 90px;
 }
 
 .header h1 {
   font-size: 50px;
   }
 
-.assignment {
+.assignments {
   font-size: 12px;
   line-height: 24px;
   font-family: 'helvetica', 'arial', 'sans';
@@ -66,4 +66,3 @@ a {
   color: #FFF;
   text-decoration: none;
 }
-
