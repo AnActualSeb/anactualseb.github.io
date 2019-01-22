@@ -21,63 +21,94 @@
         <h2>Documentation</h2>
         <h3>Circuit Diagram</h3>
         <img src="images/a2-fade-diagram.png" width=700>
-        <p>The red LEDs I used have a voltage drop of 1.8V, and am working on the resistance calculation... I use 4 1k
-            Ohm resistors in my circuit design.</p>
+        <p>Pin 2 is used as an input that watches for voltage changes in the whole circuit, which the pushButton
+            component triggers!</p>
         <h3>Schematic</h3>
         <img src="images/a2-fade-schematic.png" width=500>
-        <p>I used pins 9, 10, and 11 from the Arduino R3,, as well as a connection to ground from my laptop.</p>
+        <p>Following Ohm's Law:</p>
+        <ul>
+            <li>The Arduino outputs 5V</li>
+            <li>The white-colored LEDs each have a forward-voltage of 3.3V</li>
+            <li>Voltage moving through the circuit (V) = 5 - 3.3 = 1.7V</li>
+            <li>From the data sheet, the max current of the LEDs is 20mA = 0.02A</li>
+            <li>V = I x R -> R = V/I -> R = 1.7V / 0.02A = 85Ω</li>
+            <li>I used 330Ω resistors because (honestly) that is what we had been using in class throughout the
+                examples</li>
+        </ul>
         <h3>Firmware</h3>
         <pre><code>
 /*
-Assignment 1: Blink!
 Sebastian Torres Retana
+*SHOUTOUT to my amazing friend Timothy Sun for helping me understand the logic of the example programs!*
+Assignment 2: Lights that Fade!
 
-Adapted from code tutorial (http://www.arduino.cc/en/Tutorial/Blink) by 
-Scott Fitzgerald, Arturo Guadalupi, and Colby Newman
+3 white LEDs start off as brightly on. As soon as the button is pressed, they begin to fade.
 
-Turns on 3 LEDs on by one in sequence from left to right, short and sweeet!
+Adapted from code tutorials:
+(http://www.arduino.cc/en/Tutorial/Fade)
+(http://www.arduino.cc/en/Tutorial/Button)
 */
 
-// the setup function runs once when you press reset or power the board
-void setup() {
-// initialize each digital pin used as an output.
+// "global constant" initialized to 2 for the pushbutton pin
+// this value will not change throughout the program
+const int buttonPin = 2;
 
-// initialize digital pin 9 as an output
-pinMode(9, OUTPUT);
-// initialize digital pin 10 as an output
-pinMode(10, OUTPUT);
-// initialize digital pin 11 as an output
-pinMode(11, OUTPUT);
+// the following variables will be changing throughout the program:
+// variable for reading the pushbutton status
+int buttonState = 0;
+// how bright the LED is
+int brightness = 0;
+// how many points to fade the LED by
+int fadeValue = 5;
+
+void setup() {
+// use a for-loop to initialize pins 3, 6, and 9 as outputs
+for (int thisPin = 3; thisPin < 10; thisPin+=3) {
+    pinMode(thisPin, OUTPUT);
+}
+    
+// initialize the pushbutton pin (global constant) as an input
+pinMode(buttonPin, INPUT);
 }
 
-// the loop function runs over and over again forever
 void loop() {
-// turns on LEDs from left to right, one by one, then off, using offset delays,
+// read the state of the pushbutton value
+buttonState = digitalRead(buttonPin);
 
-// turn on LED connected to digital pin 9 by setting voltage to HIGH
-digitalWrite(9, HIGH);
-// wait for 2 seconds
-delay(2000);
-// turn off LED connected to digital pin 9 by setting voltage to LOW
-digitalWrite(9, LOW);
-// wait for 2 seconds
-delay(2000);
-// turn on LED connected to digital pin 10 by setting voltage to HIGH
-digitalWrite(10, HIGH);
-// wait for 1 second
-delay(1000);
-// turn off LED connected to digital pin 10 by setting voltage to LOW
-digitalWrite(10, LOW);
-// wait for 1 second
-delay(1000);
-// turn on LED connected to digital pin 11 by setting voltage to HIGH
-digitalWrite(11, HIGH);
-// wait for 500 milliseconds
-delay(500);
-// turn off LED connected to digital pin 11 by setting voltage to LOW
-digitalWrite(11, LOW);
-// wait for 500 milliseconds
-delay(500);
+// check if the pushbutton is pressed. If it is, the buttonState is HIGH (on):
+if (buttonState == HIGH) {
+
+    // use a for-loop to turn each LED on (pins 6-9)
+    for (int thisPin = 3; thisPin < 10; thisPin+=3) {
+    digitalWrite(thisPin, HIGH);
+    }
+
+    // use another for-loop to set the brightness of each LED (pins 6-9)
+    for (int thisPin = 3; thisPin < 10; thisPin+=3) {
+    analogWrite(thisPin, brightness);
+    }
+
+    // update the brightness value for the next time the above for-loop is executed
+    brightness = brightness + fadeValue;
+    
+    // reverse the direction of the brightness at the end of the fading effect
+    // checking each end of the brightness values (top and bottom), then inverting them
+    if (brightness <= 0 || brightness >= 255) {
+    fadeValue = -fadeValue;
+    }
+    
+    // wait for 10 milliseconds to see the dimming effect
+    delay(10);
+    
+}
+// otherwise, if the buttonState is LOW (off), turn the LEDs on
+else {
+
+    // again, using a for-loop to turn each LED in pins 6-9 on
+    for (int thisPin = 3; thisPin < 10; thisPin+=3) {
+    digitalWrite(thisPin, HIGH);
+    }
+}
 }
         </pre></code>
     </section>
