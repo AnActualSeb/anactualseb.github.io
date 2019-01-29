@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Sebastian's A3: Input and Output! Page</title>
+
+    <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+    <header class="assignment-page-header">
+        <h1>Sebastian's Assignment 3!</h1>
+        <p><img src="/images/a3.gif" width=600></p>
+    </header>
+
+    <section class="assignment-documentation">
+        <h2>Documentation</h2>
+        <h3>Circuit Diagram</h3>
+        <img src="images/a3-input-output-diagram.png" width=700>
+        <p>Pin 2 is used as an input that watches for voltage changes in the whole circuit, which the pushButton
+            component triggers!</p>
+        <h3>Schematic</h3>
+        <img src="images/a3-input-output-schematic.png" width=500>
+        <h3>Calculations</h3>>
+        <img src="images/a3-input-output-calculations.png" width=500>
+        <h3>Firmware</h3>
+        <pre><code>
+/*
+Sebastian Torres Retana
+Assignment 3: Input Output!
+
+Blue and green LEDs toggle between on, off, and fading depending on how lit the room is
+
+Adapted from code tutorials:
+https://www.arduino.cc/en/tutorial/AnalogInput
+*/
+
+// initial photoresistor value
+int sensorValue = 0;
+// fading incrementor
+int fadeValue = 5;
+// initialize pin 11 analog out value
+int pinValue11 = 0;
+
+void setup() {
+    // configure digital pin 13 as an output
+    pinMode(13, OUTPUT);
+    // configure digital pin 11 as an output
+    pinMode(11, OUTPUT);
+    // initialize serial communications at 9600 bps
+    Serial.begin(9600);
+}
+
+void loop() {
+    // read the analog in value
+    sensorValue = analogRead(A0); // read and save value from photoresistor
+
+    // print current light value to Serial Monitor
+    Serial.println(sensorValue);
+
+    // If it is bright...
+    if(sensorValue > 450) {
+        Serial.println("It's light, I'll turn Blue and Green ON!");
+        //turn blue LED off
+        digitalWrite(13,LOW);
+        // turn green LED off
+        digitalWrite(11,LOW);
+    }
+    // If it is average light...
+    else if(sensorValue > 229 && sensorValue < 451) { 
+        Serial.println("It's average light, I'll turn Blue ON and Green OFF!");
+        digitalWrite(13,HIGH); // turn blue LED on
+        digitalWrite(11,LOW);  // turn green LED off
+    }
+    // If it's dark...
+    else {
+        Serial.println("It's pretty dark, I'll turn Blue ON and FADE Green!");
+        // Turn blue LED on
+        digitalWrite(13,HIGH);
+        
+        // map analog in value to the range of the analog out for green LED:
+        pinValue11 = map(sensorValue, 365, 115, 5, 250);
+        // write value using analog to make the light fade
+        analogWrite(11, pinValue11);
+        // wait for 10 milliseconds to see the dimming effect
+        // will continuously spam the Serial Monitor though...
+        delay(10);
+    }
+}
+        </pre></code>
+    </section>
+</body>
+
+</html>
