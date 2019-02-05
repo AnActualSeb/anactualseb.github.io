@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Sebastian's A4: High(er) Voltage! Page</title>
+
+    <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+    <header class="assignment-page-header">
+        <h1>Sebastian's Assignment 4!</h1>
+        <p><img src="/images/a4.gif" width=600></p>
+        <p>Ooh~ fancy motors</p>
+    </header>
+
+    <section class="assignment-documentation">
+        <h3>Circuit Diagram</h3>
+        <img src="images/a4-higher-voltage-diagram.png" width=700>
+        <h3>Schematic</h3>
+        <img src="images/a4-higher-voltage-schamatic.png" width=500>
+        <h3>Calculations</h3>>
+        <img src="images/a4-higher-voltage-calculations.png" width=500>
+        <h3>Firmware</h3>
+        <pre><code>
+/*
+Sebastian Torres Retana
+Assignment 4: High(er) Voltage!
+
+A motorized fan fades between low and high depending on how bright the environment is
+*/
+
+// input pin for reading changes from LDR
+const int analogInPin = A0;
+// output pin controlling the motor/fan
+const int analogOutPin = 9;
+// value read from the LDR
+int sensorValue = 0;
+// output value of pin 9
+int outputValue = 0;
+int brightness = 0;    // how bright the LED is
+int fadeAmount = 5;    // how many points to fade the LED by
+
+// the setup routine runs once when you press reset:
+void setup() {
+    // initialize serial communications at 9600 bps
+    Serial.begin(9600);
+    // initialize pin A0 as input
+    pinMode(analogInPin, INPUT);
+    // initialize pin 9 as ouput to control motor fan
+    pinMode(analogOutPin, OUTPUT);
+}
+
+// the loop routine runs over and over again forever:
+void loop() {
+    // read the analogIn value
+    sensorValue = analogRead(analogInPin);
+    // map analogInPin to range of values for analogOut from measured values
+    outputValue = map(sensorValue, 200, 500, 0, 255);
+    // update analogOut value
+    analogWrite(analogOutPin, outputValue);
+    // print label for sensor value
+    Serial.print("brightness = ");
+    //print sensor value
+    Serial.print(sensorValue);
+    //print label for output
+    Serial.print("\t output = ");
+    //print output value
+    Serial.println(outputValue);
+    // wait 2 milliseconds before the next loop for the analog-to-digital
+    // converter to settle after the last reading:
+    delay(2);
+}
+        </pre></code>
+    </section>
+</body>
+
+</html>
