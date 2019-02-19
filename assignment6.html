@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+
+    <title>Sebastian's A6: Datalogging! Page</title>
+
+    <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+    <header class="assignment-page-header">
+        <h1>Sebastian's Assignment 6!</h1>
+        <p><img src="/images/a5.gif" width=600></p>
+        <p style="padding: 2px;">Ooh~ MORE fancy motors</p>
+    </header>
+
+    <section class="assignment-documentation">
+        <h3 style="padding: 2px;">Circuit Diagram</h3>
+        <img src="images/a6-datalogging-diagram.png" width=700>
+        <p>I used a 10k omh resistor to have a high enough threshold for the current being supplied from the 5V
+            Arduino.</p>
+        <h3>Schematic</h3>
+        <img src="images/a6-datalogging-schematic.png" width=500>
+        <p>When the button is not pressed, current does not flow past the wire connected to pin 2 and it reads 0. When
+            it is pressed, current flows and pin 2 reads 1</p>
+        <h3>Arduino Code Snippet</h3>
+        <pre><code>
+/*
+Sebastian Torres Retana
+Assignment 5: Motors!
+
+A joystick controls the position of a servo!
+Adapted from Sweep http://www.arduino.cc/en/Tutorial/Sweep
+*/
+
+#include <Servo.h> // Arduino servo library import statement
+
+Servo myservo;  // create servo object to control a servo
+
+int pos = 0;    // variable to store the servo position
+int x = A0;     // define x as joystick position value read from analog pin 0
+int y = A1;     // define y as joystick position value read from analog pin 1
+int xval = 0;   // initialize xVal to 0, will change
+int yval = 0;   // initialize yVal to 0, will change
+
+void setup() {
+    myservo.attach(9);   // attaches the servo on pin 9 to the servo object
+    Serial.begin(9600);  // opens serial port, sets data rate to 9600 bps
+}
+
+void loop() {
+    // set xVal to value read from x, which is analog pin 0
+    xVal = analogRead(x);
+    // set yVal to value read from y, which is analog pin 1
+    yVal = analogRead(y);
+
+    // waits 300 ms for servo to get to position
+    delay(10);
+
+    // if the joystick is pressed up
+    if(xVal <= 1024 && xVal >= 768 && yVal <= 768 && yVal >= 256) {
+    pos = 45;  // set position to 45 degrees
+    myservo.write(pos);  // tell servo to go to "pos" position
+    Serial.println(pos);  // prints servo position to serial monitor
+    }
+
+    // if the joystick is pressed down
+    else if(xVal <= 256 && xVal >= 0 && yVal <= 768 && yVal >= 256) {
+    pos = 90;  // set position to 90 degrees
+    myservo.write(pos);  // tell servo to go to "pos" position
+    Serial.println(pos);  // prints servo position to serial monitor
+    }
+
+    // if the joystick is pressed right
+    else if(xVal <= 768 && xVal >= 256 && yVal <= 1024 && yVal >= 768) {
+    pos = 180;  // set position to 180 degrees
+    myservo.write(pos);  // tell servo to go to "pos" position
+    Serial.println(pos);  // prints servo position to serial monitor
+    }
+
+    // if the joystick is pressed left
+    else if(xVal <= 768 && xVal >= 256 && yVal <= 256 && yVal >= 0) {
+    pos = 135;  // set position to 135 degrees
+    myservo.write(pos);  // tell servo to go to "pos" position
+    Serial.println(pos);  // prints servo position to serial monitor
+    }
+}
+        </pre></code>
+        <h3>JavaScript Code Snippet</h3>
+        <pre><code>
+var serial; // variable to hold an instance of the serialport library
+var portName = '/dev/ttyACM0' //rename to the name of your port
+var datain; //some data coming in over serial!
+var xPos = 0;
+
+
+function setup() {
+    // make a new instance of the serialport library
+    serial = new p5.SerialPort();
+    // set a callback function for the serialport list event
+    serial.on('list', printList);
+    // callback for connecting to the server
+    serial.on('connected', serverConnected);
+    // callback for the port opening
+    serial.on('open', portOpen);
+    // callback for when new data arrives
+    serial.on('data', serialEvent);
+    // callback for errors
+    serial.on('error', serialError);
+    // callback for the port closing
+    serial.on('close', portClose);
+
+    // list the serial ports
+    serial.list();
+    // open a serial port
+    serial.open(portName);
+    // create screen canvas to house output
+    createCanvas(1200, 800);
+    // set background dimensions for color
+    background(0x08, 0x16, 0x40);
+}
+
+// get the list of ports:
+function printList(portList) {
+    // portList is an array of serial port names
+    for (var i = 0; i < portList.length; i++) {
+    // Display the list the console:
+    print(i + " " + portList[i]);
+    }
+}
+
+// prints notification that it is connected to server
+function serverConnected() {
+    print('connected to server.');
+}
+
+// prints notification that the serial port has opened
+function portOpen() {
+    print('the serial port opened.')
+}
+
+// prints notification that something went wrong with the serial port + specific error
+function serialError(err) {
+    print('Something went wrong with the serial port. ' + err);
+}
+
+// prints notification that the serial port has closed
+function portClose() {
+    print('The serial port closed.');
+}
+
+// assigns datain value from the serialEvent read in values
+function serialEvent() {
+    if (serial.available()) {
+    datain = Number(serial.readLine());
+    //console.log(datain);
+    }
+}
+
+function graphData(newData) {
+    // map the range of the input to the window height:
+    var yPos = map(newData, 0, 255, 0, height);
+    // draw the line in a pretty color:
+    stroke(255, 0, 80);
+    line(xPos, height, xPos, height - yPos);
+    // at the edge of the screen, go back to the beginning:
+    if (xPos >= width) {
+    xPos = 0;
+    // clear the screen by resetting the background:
+    background(0x08, 0x16, 0x40);
+    } else {
+    // increment the horizontal position for the next reading:
+    xPos++;
+    }
+}
+
+function draw() {
+    // set background color to white
+    background(0);
+    // set box fill color to black
+    fill(255);
+
+    // set state of the message on index.html
+    // if button is being pressed, output YES
+    if (datain == 1) {
+    text("button pressed: YES", 30, 30);
+    // otherwise, if it is not being pressed (default state of index.html), output NO
+    } else {
+    text("button pressed: NO", 30, 30);
+    }
+}
+        </pre></code>
+    </section>
+</body>
+
+</html>
