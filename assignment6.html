@@ -30,63 +30,25 @@
         <pre><code>
 /*
 Sebastian Torres Retana
-Assignment 5: Motors!
-
-A joystick controls the position of a servo!
-Adapted from Sweep http://www.arduino.cc/en/Tutorial/Sweep
+A6: Datalogging!
+This program sets up a simple button circuit to send values from serial
+over to a responsive webpage!
 */
 
-#include <Servo.h> // Arduino servo library import statement
-
-Servo myservo;  // create servo object to control a servo
-
-int pos = 0;    // variable to store the servo position
-int x = A0;     // define x as joystick position value read from analog pin 0
-int y = A1;     // define y as joystick position value read from analog pin 1
-int xval = 0;   // initialize xVal to 0, will change
-int yval = 0;   // initialize yVal to 0, will change
-
+// setup code to just run once
 void setup() {
-    myservo.attach(9);   // attaches the servo on pin 9 to the servo object
-    Serial.begin(9600);  // opens serial port, sets data rate to 9600 bps
+    // initialize serial communications at 9600
+    Serial.begin(9600);
 }
 
+// main code to run repeatedly
 void loop() {
-    // set xVal to value read from x, which is analog pin 0
-    xVal = analogRead(x);
-    // set yVal to value read from y, which is analog pin 1
-    yVal = analogRead(y);
-
-    // waits 300 ms for servo to get to position
-    delay(10);
-
-    // if the joystick is pressed up
-    if(xVal <= 1024 && xVal >= 768 && yVal <= 768 && yVal >= 256) {
-    pos = 45;  // set position to 45 degrees
-    myservo.write(pos);  // tell servo to go to "pos" position
-    Serial.println(pos);  // prints servo position to serial monitor
-    }
-
-    // if the joystick is pressed down
-    else if(xVal <= 256 && xVal >= 0 && yVal <= 768 && yVal >= 256) {
-    pos = 90;  // set position to 90 degrees
-    myservo.write(pos);  // tell servo to go to "pos" position
-    Serial.println(pos);  // prints servo position to serial monitor
-    }
-
-    // if the joystick is pressed right
-    else if(xVal <= 768 && xVal >= 256 && yVal <= 1024 && yVal >= 768) {
-    pos = 180;  // set position to 180 degrees
-    myservo.write(pos);  // tell servo to go to "pos" position
-    Serial.println(pos);  // prints servo position to serial monitor
-    }
-
-    // if the joystick is pressed left
-    else if(xVal <= 768 && xVal >= 256 && yVal <= 256 && yVal >= 0) {
-    pos = 135;  // set position to 135 degrees
-    myservo.write(pos);  // tell servo to go to "pos" position
-    Serial.println(pos);  // prints servo position to serial monitor
-    }
+    // set button to the digitally read value from pin ~2
+    int button = digitalRead(2);
+    // print the button value to the serial monitor
+    Serial.println(button);
+    // delay the output by 50 ms
+    delay(50);
 }
         </pre></code>
         <h3>JavaScript Code Snippet</h3>
