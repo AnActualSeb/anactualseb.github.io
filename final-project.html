@@ -1,26 +1,188 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
 
     <title>Sebastian's Final Project Page</title>
 
     <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+  </head>
 
-</head>
-
-<body>
+  <body>
     <header class="assignment-page-header">
-        <h1>Sebastian's Final Project!</h1>
-        <p><img src="images/itemfinder-sketch.png" width=700>
-            <p>Transmitter attaches to any object you tend to lose and Arduino and a computer using proximity sensor to
-                find your lost object!</p>
+      <h1>Sebastian's Final Project - Sonar!</h1>
+      <img
+        src="/images/final-project-initial-sketch.png"
+        width="500px"
+        height="400px"
+      />
     </header>
-
-    <section class="assignment-documentation">
+    <section class="project-concept">
+      <h2>Project Concept</h2>
+      <p>
+        The original idea for my final project was to implement an item finder,
+        using either the ultrasonic sensor or RFID sensors and receivers. I
+        wasn't sure of the technical feasibility for short to middle-range
+        detection of items, so I decided to pivot to a static item finder that
+        could be placed in areas that items are likely to fall into and can't
+        easily be found. I couldn't have finished this project without some
+        Processing code help from
+        <a href="https://howtomechatronics.com/tutorials/arduino/processing/"
+          >HowToMechatronics</a
+        >! Thank you!
+      </p>
     </section>
-</body>
-
+    <section class="demo-video">
+      <h2>Demo Video</h2>
+      <video width="700" height="auto" controls>
+        <source src="images/final-project-demo.mp4" type="video/mp4" />
+      </video>
+    </section>
+    <section class="technical-implementation">
+      <h2>Technical Implementation</h2>
+      <h3>Diagram</h3>
+      <p>
+        The circuit is connected to 5V from the Arduino, powered by my laptop,
+        and all grounds are connected. The servo motor serves as the resistor in
+        this case because when I attempted adding a 1000Ω resistor or smaller,
+        the servo motor would not rotate as strongly. The servo motor is
+        connected to output pin 12 and the ultrasonic sensor is connected to
+        input pins 11 and 12.
+      </p>
+      <img
+        src="/images/final-project-diagram.png"
+        width="800px"
+        height="600px"
+      />
+      <h3>Schematic</h3>
+      <p>
+        There was a consistent 5V of power moving through the circuit, only
+        being limited by the servo motor resistor (≈3.4Ω). To reiterate, I did
+        not use a resistor for this project because the servo motor essentially
+        has one within it, and when testing my circuit, using a resistor of
+        1000Ω or less, the servo motor would not rotate as strongly, most likely
+        due to a current dampening. I attempted to measure the current using my
+        multimeter but the values did not change much from the threshold of the
+        servo motor alone. This is still a mystery...
+      </p>
+      <img
+        src="/images/final-project-schematic.png"
+        width="800px"
+        height="600px"
+      />
+    </section>
+    <section class="firmware">
+      <h2>Firmware</h2>
+      <p>
+        My project's firmware consisted of a constant communication between the
+        Arduino file and the Processing file. Arduino handled the hardware
+        communication and outputting values to the serial monitor, which were
+        picked up and interpreted by the Processing file running concurrently.
+      </p>
+      <h3>Arduino Code</h3>
+      <p>
+        The Arduino code initialized the ultrasonic sensor pins as an inputs and
+        the servo motor pin as an output. The code below outputs values in the
+        format of [angle1,distance1.,angle2,distance2.] that the ultrasonic
+        sensor reads, to be read by the concurrent Processing code. This output
+        is sent to the serial monitor, which is being listened to by the
+        Processing file for changes. This code file also handles the rotation of
+        the servo motor. The servo motor rotates from 15 to 165 degrees because
+        of the placement that I wanted it to have, relative to the enclosure I
+        put the circuit in. These values can be changed to anything between 0
+        and 180 however.
+      </p>
+      <img
+        src="/images/final-project-arduino-code-1.png"
+        width="800px"
+        height="600px"
+      />
+      <img
+        src="/images/final-project-arduino-code-2.png"
+        width="700px"
+        height="300px"
+      />
+      <h3>Processing Code</h3>
+      <p>
+        The Processing code file does the bulk of the work here and was heavily
+        influenced by
+        <a href="https://howtomechatronics.com/tutorials/arduino/processing/"
+          >HowToMechatronics</a
+        >. Even so, I can tell you what this code does. First it listens for the
+        changes in the serial monitor port coming from the Arduino code output,
+        and displays them when the ultrasonic sensor detects something in space.
+        This code also creates the "sonar" graph, which is an evenly spaced
+        semi-circle, divided into 6 evenly spaced quadrants, each spanning 30
+        degrees. It also creates a conic shape that is the "scanner" or field of
+        vision for what the ultrasonic sensor can sense. Lastly it creates green
+        lines across the semi circle when it doesn't detect anything in space,
+        and red lines when it does detect an item in space. These lines are
+        created every 5ms or so based on the sine and cosine calculations that
+        are used to calculate the distances and angles, based on the evenly
+        spaced sections, each measuring 30 radians. The tricky part here was
+        getting the widths and heights of the shapes and lines to render
+        correctly. I had issues with window sizes and so the code takes that
+        into account as well and uses window width and height variables to
+        calculate a readable radar!
+      </p>
+      <img
+        src="/images/final-project-processing-code-1.png"
+        width="900px"
+        height="600px"
+      />
+      <img
+        src="/images/final-project-processing-code-2.png"
+        width="900px"
+        height="600px"
+      />
+      <img
+        src="/images/final-project-processing-code-3.png"
+        width="700px"
+        height="700px"
+      />
+    </section>
+    <section class="write-up">
+      <h2>Implementation Process & Technical Write-up</h2>
+      <h3>Step 1: Create Enclosure for Breadboard + Circuit</h3>
+      <p>
+        I asked my roommate for help with creating a 3D-printed enclosure for
+        the breadboard and circuitry of this project. We utilized AutoDesk to
+        create the model and then exported the g-code for printing. The way we
+        did this was to measure the dimensions of the breadboard exactly and
+        then add some buffer millimeters for spacing, and extract the whole
+        shape upwards for an enclosure. The tough part was getting the cutouts
+        for the USB-A port and the power entry port correct with the scaling
+        factor that 3D-modeling software tends to add for you.
+      </p>
+      <h3>Step 2: Implement Circuit</h3>
+      <p>
+        Next, I simply connected the necessary wires to the servo motor and the
+        ultrasonic sensor and the Arduino, but NOT after reading the DATA SHEET
+        for the ultrasonic sensor to learn more about it! This was the easiest
+        part of the work for this project because the circuit for connecting
+        these three components together is relatively trivial.
+      </p>
+      <h3>Step 3: Test Servo is Outputting Correct Serial Port Values</h3>
+      <p>
+        I should preface this step by saying that I had to mount my servo motor
+        using zip ties and electrical tape to my printed enclosure in order to
+        get it to a height where it wouldn't detect the table over and over
+        again but rather objects at its "eye-level". Once the ultrasonic sensor
+        was zip tied and mounted to the servo motor, I ran Sweep as an example
+        program to test the rotation sensitivity, and then ran the Arduino file
+        for my final project to make sure the serial monitor was getting the
+        series of 4 values that I needed it to record.
+      </p>
+      <h3>Step 4: Implement Processing Code from Tutorial for Sonar Graph</h3>
+      <p>
+        The last bit of work was done mostly watching someone else's tutorial
+        and getting some math help from trusty online resources. Getting the
+        radian values right for the correct graph plot to render was key here,
+        but after all the math was said and done, all that needed to happen was
+        run the two programs at once so that they could communicate with each
+        other, and off we go!
+      </p>
+    </section>
+  </body>
 </html>
